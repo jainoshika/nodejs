@@ -14,6 +14,10 @@
     <h1>URL Shortener</h1>
      <% if (locals.shortid) { %> <%# locals : data from backend%>
         <p>URL Generated: http://localhost:8001/url/<%= shortid %></p>
+                <form action="/" method="GET">
+            <button type="submit">generate again</button>
+        </form>
+
     <% } %>
     <div>
     <form method="POST" action="/url"> <%# redirect to this action - path for submitting data %>
@@ -22,6 +26,9 @@
         </label>
         <button type="submit">Generate</button>
     </form>
+    </div>
+    <div>
+
     </div>
     <div>
         <% if (locals.urls){ %> <%# yes urls: allUrls, but does not run when i get only shortid from backend %>

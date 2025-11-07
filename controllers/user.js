@@ -1,46 +1,32 @@
-const {nanoid} = require("nanoid");
-const URLModel = require("../models/user");
+const User = require("../models/user");
+const { v4: uuidv4} = require("uuid");
+const { setUser } = require("../service/auth");
 
-async function handleGenerateNewShortUrl(req, res) {
-    const body = req.body;
-    const redirectLink = body.url // form data parsed using middleware, same body.name (where name is form ejs)
-    console.log(redirectLink);
-    if (!redirectLink) return res.status(400).json({error : 'in function, url is required'});
-    const shortID = nanoid(7);
-    await URLModel.create({
-        shortid: shortID,
-        redirectLink: redirectLink,
-        visitHistory: []
-    })
-    return res.render("home", { shortid: shortID}); //generated short id and render home page and take data shortid
+async function handleUserSignup(req, res) {
+    const { name, email, password } = req.body;
+    console.log(req.body);
+    await User.create({ // creating schema type data in db
+        name, 
+        email,
+        password,
+    });
+    return res.render("login"); // http://localhost:8001/user
 }
-
-async function handleRedirectShortUrl(req, res) {
-    const shortid = req.params.shortid;
-    if (!shortid) return res.status(400).json({error: "redirect , url is required"});
-
-    const entry = await URLModel.findOneAndUpdate({
-            shortid,
-        },
-        {
-            $push: {
-                visitHistory: {
-                    timestamps: Date.now()
-                },
-            },
-        }
-    );
-    return res.redirect(entry.redirectLink);
-}
-
-async function handleVisitClicks(req, res) {
-    const shortid = req.params.shortid;
-    console.log(shortid);
-    const entry = await URLModel.findOne({shortid});
-    return res.json({totalClicks: entry.visitHistory.length});
+//application use only after login, data from frontend - email, password
+async function handleUserLogin(req, res) {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
+    if (!user) {
+        return res.render("login", {
+            error: "Invalid email or password"
+        })
+    }
+    const sessionId = uuidv4();
+    setUser(sessionId, user);
+    res.cookie("uid", sessionId);
+    return res.redirect("/"); //root page which is main application
 }
 module.exports = {
-    handleGenerateNewShortUrl,
-    handleRedirectShortUrl,
-    handleVisitClicks
+    handleUserSignup,
+    handleUserLogin,
 }

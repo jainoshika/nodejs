@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { handleGenerateNewShortUrl, handleRedirectShortUrl, handleVisitClicks } = require("../controllers/user");
+const { handleGenerateNewShortUrl, handleRedirectShortUrl, handleVisitClicks } = require("../controllers/url");
 
 router.post("/", handleGenerateNewShortUrl); //->  /url/ (path)
 router.get("/:shortid", handleRedirectShortUrl); // -> /url/:shortid
