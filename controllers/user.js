@@ -21,9 +21,8 @@ async function handleUserLogin(req, res) {
         })
     }
     const token  = setUser(user); // user = model schem -> {name, email, pw, ts}
-    return res.json({ token });// The redirect happens in the frontend, not the backend. this is for api backend and frontend
-    // this is for web apps -> res.cookie("uid", token);
-    // return res.redirect("/"); //root page which is main application
+    res.cookie("token", token);//return res.json({ token });// The redirect happens in the frontend, not the backend. this is for api backend and frontend 
+    return res.redirect("/"); //root page which is main application
 }
 module.exports = {
     handleUserSignup,

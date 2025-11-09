@@ -4,7 +4,7 @@ const app = express();
 const { connectMongoDB } = require("./config/connections");
 const path = require("path");
 const cookieParser = require('cookie-parser')
-const { restrictToLoggedinUserOnly, checkAuth } = require("./middlewares/auth")
+const { checkForAuthentication, restrictTo } = require("./middlewares/auth")
 // MIDDLEWARES
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -26,8 +26,9 @@ app.set("views",path.resolve("./views"))
     
 //Routes -> Controllers
 //TODO: shows shortids - redirect - counts
-app.use("/url", restrictToLoggedinUserOnly, URLRoute);  // first visit, if /url in path
+app.use(checkForAuthentication);
+app.use("/url", restrictTo(['NORMAL', 'ADMIN']), URLRoute);  // first visit, if /url in path
 app.use("/user", UserRoute); //any request on userRoute - signup or login
-app.use("/", checkAuth, staticRoute); // redirect from /app
+app.use("/", staticRoute); // redirect from /app
 
 app.listen(PORT, ()=>{console.log(`Server started at PORT ${PORT}`)});  

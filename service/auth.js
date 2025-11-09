@@ -6,6 +6,7 @@ const secret = "oshika@123@";
 function setUser(user) { //  user = model schem -> {name, email, pw, ts}
     return jwt.sign({
         _id: user._id, //_id , mongo db adds itself
+        role: user.role,
         email: user.email,
     }, 
     secret
